@@ -82,7 +82,7 @@ if __name__ == '__main__':
 
         st_df.to_excel(OUT_FILE, index=False)
 
-    logger.info("Результат сохранён в %s", OUT_FILE)
+    logger.info('Результат сохранён в %s', OUT_FILE)
     logger.info('Всего артикулов: %s', len(mapping))
     logger.info('Совпало: %s', matched)
     logger.info('Не найдено: %s', len(missed))
