@@ -1,1 +1,1 @@
-from .endpoints.extract_xlsx_data import router as load_xlsx_router  # noqa
+from .endpoints.extract_xlsx_data import router as upload_router  # noqa
