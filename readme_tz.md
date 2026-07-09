@@ -109,8 +109,7 @@ tpmk_analyzer/
 │   │   ├── main.py
 │   │   ├── api/
 │   │   │   ├── v1/
-│   │   │   │   ├── routes/
-│   │   │   │   │   ├── health.py
+│   │   │   │   ├── endpoints/
 │   │   │   │   │   ├── uploads.py
 │   │   │   │   │   ├── reports.py
 │   │   │   │   │   └── analytics.py
