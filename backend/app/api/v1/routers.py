@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1 import upload_router
+from backend.app.api.v1 import upload_router
 
 
 v1_router = APIRouter()
