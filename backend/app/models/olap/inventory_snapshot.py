@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from backend.app.models.base import Base
 
 # Для объёмов (11M строк/год) добавь в миграциях составной индекс:
-# (snapshot_date, product_id)
+# (snapshot_date, group1_id, assortment_id)
 
 
 class InventoryDailySnapshot(Base):
