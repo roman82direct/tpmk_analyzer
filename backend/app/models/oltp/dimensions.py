@@ -51,6 +51,10 @@ class AssortmentGM(CommonFieldsMixin, Base):
     __tablename__ = 'assortment_gm'
 
 
+class Brand(CommonFieldsMixin, Base):
+    """Таблица брендов."""
+
+
 class Country(CommonFieldsMixin, Base):
     """Таблица стран."""
 
