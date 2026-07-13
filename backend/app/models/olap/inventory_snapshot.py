@@ -1,7 +1,7 @@
 from datetime import date
 from decimal import Decimal
 
-from sqlalchemy import BigInteger, Date, ForeignKey, Integer, Numeric
+from sqlalchemy import Date, ForeignKey, Integer, Numeric
 from sqlalchemy.orm import Mapped, mapped_column
 
 from backend.app.models.base import Base
@@ -19,7 +19,7 @@ class InventoryDailySnapshot(Base):
 
     __tablename__ = 'fact_inventory_daily_snapshot'
 
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     snapshot_date: Mapped[date] = mapped_column(Date, index=True)
     load_batch_id: Mapped[int] = mapped_column(ForeignKey('load_batch.id'),
                                                index=True)
@@ -33,18 +33,21 @@ class InventoryDailySnapshot(Base):
     assortment_gm_id: Mapped[int] = mapped_column(
         ForeignKey('assortment_gm.id'), index=True
     )
-    group1_id: Mapped[int] = mapped_column(ForeignKey('group1.id'), index=True)
-    group2_id: Mapped[int] = mapped_column(ForeignKey('group2.id'), index=True)
-    group3_id: Mapped[int] = mapped_column(ForeignKey('group3.id'), index=True)
+    group1_id: Mapped[int] = mapped_column(ForeignKey('group.id'), index=True)
+    group2_id: Mapped[int] = mapped_column(ForeignKey('group.id'), index=True)
+    group3_id: Mapped[int] = mapped_column(ForeignKey('group.id'), index=True)
     brand_id: Mapped[int] = mapped_column(ForeignKey('brand.id'), index=True)
     buyer_id: Mapped[int] = mapped_column(ForeignKey('user.id'), index=True)
     store_id: Mapped[int] = mapped_column(ForeignKey('store.id'), index=True)
     # количественные показатели
-    kz_rc: Mapped[Decimal] = mapped_column(Numeric(6, 2), default=0.0,
+    kz_rc: Mapped[Decimal] = mapped_column(Numeric(10, 2),
+                                           default=Decimal('0.00'),
                                            index=True)                     # КЗ остатка РЦ
-    total_kz: Mapped[Decimal] = mapped_column(Numeric(6, 2), default=0.0)  # КЗ остатка
-    total_kz_plus_path: Mapped[Decimal] = mapped_column(Numeric(6, 2),
-                                                        default=0.0)       # КЗ + путь
+    total_kz: Mapped[Decimal] = mapped_column(Numeric(10, 2),
+                                              default=Decimal('0.00'))     # КЗ остатка
+    total_kz_plus_path: Mapped[Decimal] = mapped_column(
+        Numeric(10, 2), default=Decimal('0.00')
+    )                                                                      # КЗ + путь
     current_stock: Mapped[int] = mapped_column(Integer, default=0)         # Остаток (шт)
     wh_stock: Mapped[int] = mapped_column(Integer, default=0)              # Скл. кол. Остаток ОПТа
     stock_sp: Mapped[int] = mapped_column(Integer, default=0)              # В т.ч. Остаток склады СП (шт)
@@ -59,6 +62,7 @@ class InventoryDailySnapshot(Base):
     turnover_ss: Mapped[int] = mapped_column(Integer, default=0)           # ТО СС, руб.
     turnover: Mapped[int] = mapped_column(Integer, default=0)              # ТО, руб.
 
+    # На подумать (нужно так денормализовать?)
     # cost_price_rub        -- Себ., руб.
     # opt_price10_rub       -- Оптовая Цена10, руб.
     # sp_opt_price          -- СП Опт Цена10, руб.
