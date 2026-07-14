@@ -4,17 +4,14 @@ from decimal import Decimal
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import Date, ForeignKey, Integer, Numeric, String, SmallInteger
 
-from backend.app.models.base import Base, CommonFieldsMixin, CommonMixin
+from backend.app.models.base import Base, CommonMixin
 
 
 class Product(CommonMixin, Base):
     """Таблица товаров."""
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True,
-                                    autoincrement=True)
     articul: Mapped[str] = mapped_column(String, nullable=False,
                                          index=True, unique=True)
-    name: Mapped[str] = mapped_column(String, nullable=False)
     quantity_in_box: Mapped[int] = mapped_column(Integer, default=0)         # Кол. в кор.
     min_opt_batch: Mapped[int] = mapped_column(Integer, default=0)           # Мин. партия ОПТ
     min_gm_batch: Mapped[int] = mapped_column(Integer, default=0)            # Мин. партия ГМ
@@ -35,29 +32,27 @@ class Product(CommonMixin, Base):
 class Group(CommonMixin, Base):
     """Таблица групп товаров."""
 
-    id: Mapped[int] = mapped_column(SmallInteger, primary_key=True)
-    name: Mapped[str] = mapped_column(String, nullable=False, unique=True)
     parent_id: Mapped[int | None] = mapped_column(ForeignKey('group.id'))
     level: Mapped[int] = mapped_column(SmallInteger, nullable=False)
 
 
-class Assortment(CommonFieldsMixin, Base):
+class Assortment(CommonMixin, Base):
     """Таблица ассортиментов ОПТа."""
 
 
-class AssortmentGM(CommonFieldsMixin, Base):
+class AssortmentGM(CommonMixin, Base):
     """Таблица ассортиментов ГМ."""
 
     __tablename__ = 'assortment_gm'
 
 
-class Brand(CommonFieldsMixin, Base):
+class Brand(CommonMixin, Base):
     """Таблица брендов."""
 
 
-class Country(CommonFieldsMixin, Base):
+class Country(CommonMixin, Base):
     """Таблица стран."""
 
 
-class Store(CommonFieldsMixin, Base):
+class Store(CommonMixin, Base):
     """Таблица лавок."""
