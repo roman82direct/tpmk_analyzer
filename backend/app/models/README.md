@@ -1,71 +1,110 @@
 ## ER-диаграмма данных
 
 ```mermaid
-erDiagram
+    erDiagram
+        PRODUCT {
+            int id PK
+            string name "Название товара (уникально)"
+            string articul "Артикул (уникально)"
+            int quantity_in_box "Кол-во в коробке"
+            int min_opt_batch "Мин. партия ОПТ"
+            int min_gm_batch "Мин. партия ГМ"
+            numeric cost_price "Себестоимость, руб."
+            numeric opt_price10 "Оптовая цена10, руб."
+            numeric sp_opt_price "СП оптовая цена10, руб."
+            numeric so_opt_price "СО цена10, руб."
+            date arrival_date "Дата ввоза"
+            date next_delivery_date "Дата следующего прихода"
+            date opt_end_date "Дата окончания продаж ОПТ"
+            date gm_end_date "Дата окончания продаж ГМ"
+        }
 
-    %% OLTP (service layer)
+        GROUP {
+            int id PK
+            string name "Название группы (уникально)"
+            int parent_id FK "Родительская группа"
+            smallint level "Уровень иерархии"
+        }
 
-    USERS {
-        bigint id PK
-        text  full_name
-        text  role        "buyer / manager / etc"
-    }
+        ASSORTMENT {
+            int id PK
+            string name "Ассортимент ОПТа (уникально)"
+        }
 
-    ASSORTMENTS {
-        bigint id PK
-        text  code
-        text  name
-    }
+        ASSORTMENT_GM {
+            int id PK
+            string name "Ассортимент ГМ (уникально)"
+        }
 
-    GROUPS {
-        bigint id PK
-        text  name
-        int   level      "1 / 2 / 3"
-    }
+        BRAND {
+            int id PK
+            string name "Бренд (уникально)"
+        }
 
-    STORES {
-        bigint id PK
-        text  code
-        text  name
-    }
+        COUNTRY {
+            int id PK
+            string name "Страна (уникально)"
+        }
 
-    PRODUCTS {
-        bigint id PK
-        text  articul
-        text  name
-        bigint assortment_id FK
-        bigint buyer_id      FK
-        bigint group1_id     FK
-        bigint group2_id     FK
-        bigint group3_id     FK
-    }
+        STORE {
+            int id PK
+            string name "Лавка/магазин (уникально)"
+        }
 
-    LOAD_BATCHES {
-        bigint id PK
-        timestamptz loaded_at
-        date        snapshot_date
-        text        source_file_name
-        text        source_file_hash
-        text        status
-        int         rows_count
-        text        error_message
-    }
+        LOAD_BATCH {
+            int id PK
+            datetime loaded_at "Момент загрузки"
+            date snapshot_date "Дата snapshot'a"
+            string source_file_name "Имя исходного файла"
+            string source_file_hash "Хэш файла"
+            string status "Статус загрузки"
+            int rows_count "Кол-во строк"
+            string error_message "Сообщение об ошибке"
+        }
 
-    FACT_INVENTORY_DAILY_SNAPSHOT {
-        bigint id PK
-        date   snapshot_date
-        bigint product_id    FK
-        bigint assortment_id FK
-        bigint buyer_id      FK
-        bigint manager_id    FK
-        bigint store_id      FK
-        bigint load_batch_id FK
-    }
+        INVENTORY_DAILY_SNAPSHOT {
+            int id PK
+            date snapshot_date "Дата snapshot'a"
+            int load_batch_id FK "Загрузка"
+            int product_id FK "Товар"
+            int country_id FK "Страна"
+            int assortment_id FK "Ассортимент ОПТа"
+            int assortment_gm_id FK "Ассортимент ГМ"
+            int group1_id FK "Группа 1"
+            int group2_id FK "Группа 2"
+            int group3_id FK "Группа 3"
+            int brand_id FK "Бренд"
+            int store_id FK "Лавка/магазин"
+            numeric kz_rc "КЗ остатка РЦ"
+            numeric total_kz "КЗ остатка"
+            numeric total_kz_plus_path "КЗ + путь"
+            int current_stock "Остаток (шт)"
+            int wh_stock "Складской остаток ОПТа"
+            int stock_sp "Остаток склады СП (шт)"
+            int stock_so "Остаток склады СО (шт)"
+            int in_transit "В пути, кол."
+            int in_purchase "В закупе, кол."
+            int reserve_client "Резерв клиента, шт."
+            int reserve_transfer "Остатки трансфер, кол."
+            int reserve_other "Резерв прочий, шт."
+            int sold_qty "Продано, шт."
+            int turnover_ss "ТО СС, руб."
+            int turnover "ТО, руб."
+        }
 
-    PRODUCTS    ||--o{ FACT_INVENTORY_DAILY_SNAPSHOT : "product"
-    ASSORTMENTS ||--o{ FACT_INVENTORY_DAILY_SNAPSHOT : "assortment"
-    USERS       ||--o{ FACT_INVENTORY_DAILY_SNAPSHOT : "buyer"
-    USERS       ||--o{ FACT_INVENTORY_DAILY_SNAPSHOT : "manager"
-    STORES      ||--o{ FACT_INVENTORY_DAILY_SNAPSHOT : "store"
-    LOAD_BATCHES||--o{ FACT_INVENTORY_DAILY_SNAPSHOT : "load_batch"
+        %% Иерархия групп
+        GROUP ||--o{ GROUP : "родитель -> дочерние группы"
+
+        %% Факт и измерения
+        LOAD_BATCH ||--o{ INVENTORY_DAILY_SNAPSHOT : "загрузка содержит snapshot-строки"
+        PRODUCT ||--o{ INVENTORY_DAILY_SNAPSHOT : "товар в snapshot"
+        COUNTRY ||--o{ INVENTORY_DAILY_SNAPSHOT : "страна в snapshot"
+        ASSORTMENT ||--o{ INVENTORY_DAILY_SNAPSHOT : "ассортимент ОПТа в snapshot"
+        ASSORTMENT_GM ||--o{ INVENTORY_DAILY_SNAPSHOT : "ассортимент ГМ в snapshot"
+        BRAND ||--o{ INVENTORY_DAILY_SNAPSHOT : "бренд в snapshot"
+        STORE ||--o{ INVENTORY_DAILY_SNAPSHOT : "лавка/магазин в snapshot"
+
+        GROUP ||--o{ INVENTORY_DAILY_SNAPSHOT : "group1_id"
+        GROUP ||--o{ INVENTORY_DAILY_SNAPSHOT : "group2_id"
+        GROUP ||--o{ INVENTORY_DAILY_SNAPSHOT : "group3_id"
 ```
