@@ -1,0 +1,6 @@
+Generic single-database configuration with an async dbapi.
+
+```
+alembic revision --autogenerate -m "Initial structure" --rev-id 01
+```
+
