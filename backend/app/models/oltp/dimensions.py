@@ -4,7 +4,7 @@ from decimal import Decimal
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import Date, ForeignKey, Integer, Numeric, SmallInteger, String
 
-from app.models.base import Base, CommonMixin
+from backend.app.models.base import Base, CommonMixin
 
 
 class Product(CommonMixin, Base):

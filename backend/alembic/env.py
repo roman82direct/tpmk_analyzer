@@ -10,9 +10,10 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
-from app.models.base import Base
+from backend.app.models.base import Base
 
 BASE_DIR = Path(__file__).resolve().parents[2]
+
 load_dotenv(BASE_DIR / '.env')
 
 
