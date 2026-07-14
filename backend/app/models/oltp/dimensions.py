@@ -2,9 +2,9 @@ from datetime import date
 from decimal import Decimal
 
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Date, ForeignKey, Integer, Numeric, String, SmallInteger
+from sqlalchemy import Date, ForeignKey, Integer, Numeric, SmallInteger, String
 
-from backend.app.models.base import Base, CommonMixin
+from app.models.base import Base, CommonMixin
 
 
 class Product(CommonMixin, Base):

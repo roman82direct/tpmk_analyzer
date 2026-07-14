@@ -3,7 +3,7 @@ from datetime import date, datetime, timezone
 from sqlalchemy import Date, DateTime, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from backend.app.models.base import Base
+from app.models.base import Base
 
 
 class LoadBatch(Base):

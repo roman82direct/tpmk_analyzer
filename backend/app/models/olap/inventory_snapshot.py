@@ -1,13 +1,11 @@
 from datetime import date
 from decimal import Decimal
 
-from sqlalchemy import Date, ForeignKey, Integer, Numeric
+from sqlalchemy import (Date, ForeignKey, Index, Integer, Numeric,
+                        UniqueConstraint)
 from sqlalchemy.orm import Mapped, mapped_column
 
-from backend.app.models.base import Base
-
-# Для объёмов (11M строк/год) добавь в миграциях составной индекс:
-# (snapshot_date, group1_id, assortment_id)
+from app.models.base import Base
 
 
 class InventoryDailySnapshot(Base):
@@ -19,6 +17,7 @@ class InventoryDailySnapshot(Base):
 
     __tablename__ = 'fact_inventory_daily_snapshot'
 
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
     snapshot_date: Mapped[date] = mapped_column(Date, index=True)
     load_batch_id: Mapped[int] = mapped_column(ForeignKey('load_batch.id'),
                                                index=True)
@@ -60,3 +59,13 @@ class InventoryDailySnapshot(Base):
     sold_qty: Mapped[int] = mapped_column(Integer, default=0)              # Прод. кол.
     turnover_ss: Mapped[int] = mapped_column(Integer, default=0)           # ТО СС, руб.
     turnover: Mapped[int] = mapped_column(Integer, default=0)              # ТО, руб.
+
+    __table_args__ = (
+        UniqueConstraint(
+                'snapshot_date', 'product_id',
+                name='uq_inventory_snapshot_business_key',
+            ),
+        # Индекс для запросов 'дай мне snapshot на дату по группе и статусу'
+        Index('idx_inventory_snapshot_date_group_assortment',
+              'snapshot_date', 'group1_id', 'assortment_id'),
+    )
