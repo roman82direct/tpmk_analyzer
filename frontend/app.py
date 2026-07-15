@@ -1,7 +1,17 @@
+import sys
+from pathlib import Path
+
 import httpx
 import streamlit as st
 
-API_UPLOAD_URL = 'http://localhost:8000/api/v1/upload-data/'
+# для корректного импорта st_settings 
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from app_config.config import st_settings
+
+# API_UPLOAD_URL = f'{st_settings.api_base_url}upload-data/'
 
 # st.title('TPMK Analyzer')
 
@@ -25,7 +35,7 @@ sales_reports_page = st.Page('pages/reports_sales.py',
 purchase_reports_page = st.Page('pages/reports_purchase.py',
                                 title='Отчеты по закупкам')
 
-st.set_page_config(page_title='TPMK analyzer', layout='wide')
+st.set_page_config(page_title=f'{st_settings.app_name}', layout='wide')
 
 nav = st.navigation(
     {
@@ -36,5 +46,8 @@ nav = st.navigation(
     },
     position='top',
 )
+
+st_settings.app_name
+st_settings.app_description
 
 nav.run()

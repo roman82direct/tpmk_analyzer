@@ -3,7 +3,7 @@
 
 Запуск файла streamlit из корня:
 ```
-streamlit run frontend/streamlit_app.py
+streamlit run frontend/app.py
 ```
 
 ### UI слой
