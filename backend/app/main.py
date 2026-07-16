@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from backend.app.api.v1.routers import v1_router
-from app_config.config import backend_settings
+from config.settings import backend_settings
 
 app = FastAPI(title=backend_settings.app_name)
 

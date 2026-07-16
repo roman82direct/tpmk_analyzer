@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from app_config.config import st_settings
+from config.settings import st_settings
 
 # API_UPLOAD_URL = f'{st_settings.api_base_url}upload-data/'
 

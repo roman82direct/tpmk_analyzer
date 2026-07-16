@@ -33,7 +33,7 @@
 - историю обработок;
 - метаданные файлов и задач.
 
-## Рекомендуемая структура репозитория
+## Структура проекта
 
 ```text
 tpmk_analyzer/
@@ -43,9 +43,6 @@ tpmk_analyzer/
 │   │   ├── api/
 │   │   │   ├── v1/
 │   │   │   │   ├── endpoints/
-│   │   │   │   │   ├── uploads.py
-│   │   │   │   │   ├── reports.py
-│   │   │   │   │   └── analytics.py
 │   │   │   │   └── __init__.py
 │   │   │   └── __init__.py
 │   │   ├── core/
@@ -57,26 +54,11 @@ tpmk_analyzer/
 │   │   │   ├── base.py
 │   │   │   └── migrations/
 │   │   ├── models/
-│   │   │   ├── upload.py
-│   │   │   ├── dataset.py
-│   │   │   ├── job.py
-│   │   │   └── report.py
 │   │   ├── schemas/
-│   │   │   ├── upload.py
-│   │   │   ├── job.py
-│   │   │   ├── report.py
-│   │   │   └── analytics.py
 │   │   ├── services/
 │   │   │   ├── excel/
-│   │   │   │   ├── reader.py
-│   │   │   │   ├── validator.py
-│   │   │   │   ├── transformer.py
-│   │   │   │   └── exporter.py
 │   │   │   ├── analytics/
-│   │   │   │   ├── metrics.py
-│   │   │   │   └── aggregation.py
 │   │   │   └── reports/
-│   │   │       └── xlsx_generator.py
 │   │   ├── workers/
 │   │   │   ├── jobs.py
 │   │   │   └── processor.py
@@ -99,7 +81,6 @@ tpmk_analyzer/
 ├── storage/
 │   ├── input/
 │   ├── output/
-│   └── temp/
 ├── docker/
 ├── docker-compose.yml
 └── README.md
