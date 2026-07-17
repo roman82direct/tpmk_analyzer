@@ -16,21 +16,21 @@ logger = logging.getLogger(__name__)
 def get_executing_time(func: Callable):
     """Декоратор расчета времени выполнения функции."""
     @functools.wraps(func)
-    async def wrapper(*args, **kwargs):
+    async def wrapper(*args):
         start = time.perf_counter_ns()
-        result = await func(*args, **kwargs)
+        result = await func(*args)
         end = time.perf_counter_ns()
         elapsed = (end - start) / 1_000_000
         logger.debug('Время выполнения функции %s: %.6f ms',
-                    func.__name__, elapsed)
+                     func.__name__, elapsed)
         return result
     return wrapper
 
 
 @get_executing_time
-async def counter():
+async def counter(n):
     # time.sleep(1)
-    logger.info('func counter executed')
+    logger.info('func counter executed: %s', n**2)
 
 # print(counter.__name__)
 # print(get_executing_time.__annotations__)
@@ -42,4 +42,4 @@ async def counter():
 # # decorator(counter)
 
 if __name__ == '__main__':
-    asyncio.run(counter())
+    asyncio.run(counter(5))
