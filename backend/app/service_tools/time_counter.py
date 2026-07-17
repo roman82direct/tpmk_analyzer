@@ -21,7 +21,7 @@ def get_executing_time(func: Callable):
         result = await func(*args, **kwargs)
         end = time.perf_counter_ns()
         elapsed = (end - start) / 1_000_000
-        logger.info('Время выполнения функции %s: %.6f ms',
+        logger.debug('Время выполнения функции %s: %.6f ms',
                     func.__name__, elapsed)
         return result
     return wrapper

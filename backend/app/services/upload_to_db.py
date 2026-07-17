@@ -5,14 +5,14 @@ from datetime import datetime, date
 from pathlib import Path
 
 from backend.app.config.logging_config import logging_setup
+from backend.app.config.settings import backend_settings
+from backend.app.service_tools.time_counter import get_executing_time
 
 logging_setup()
 
 logger = logging.getLogger(__name__)
 
 FILENAME_RE = re.compile(r'^tpmk_new_(?P<date>\d{2}\.\d{2}\.\d{4})\.xlsx$')
-
-storage = Path('storage/input')
 
 
 async def batch_exists(filename: str, snapshot_date: date) -> bool:
@@ -26,6 +26,7 @@ async def register_batch(filename: str, snapshot_date: date) -> None:
     logger.info('register_batch is working')
 
 
+@get_executing_time
 async def load_to_db(filepath: Path, snapshot_date: date):
     """Загружает данные из файла в таблицы Postgres."""
     logger.info('load_to_db is working')
@@ -71,6 +72,7 @@ async def process_file(file: Path) -> None:
         logger.info('Файл %s загружен для даты %s', file.name, snapshot_date)
 
 
+@get_executing_time
 async def upload_xlsx_to_db(storage: Path) -> None:
     """Загружает данные из эксель-файлов в БД."""
     files = [file for file in storage.iterdir() if file.is_file()]
@@ -83,4 +85,4 @@ async def upload_xlsx_to_db(storage: Path) -> None:
 
 
 if __name__ == '__main__':
-    asyncio.run(upload_xlsx_to_db(storage))
+    asyncio.run(upload_xlsx_to_db(backend_settings.storage_input_dir))
