@@ -16,11 +16,6 @@ FILENAME_RE = re.compile(r'^tpmk_new_(?P<date>\d{2}\.\d{2}\.\d{4})\.xlsx$')
 storage = Path('storage/input')
 
 
-async def load_to_db(filepath: Path, snapshot_date: date):
-    """Загружает данные из файла в таблицы Postgres."""
-    logger.info('load_to_db is working')
-
-
 async def batch_exists(filename: str, snapshot_date: date) -> bool:
     """Проверяет грузился ли файл в БД или нет."""
     logger.info('batch_exists is working')
@@ -30,6 +25,11 @@ async def batch_exists(filename: str, snapshot_date: date) -> bool:
 async def register_batch(filename: str, snapshot_date: date) -> None:
     """Заполняет данные о загрузке в таблице load_batch."""
     logger.info('register_batch is working')
+
+
+async def load_to_db(filepath: Path, snapshot_date: date):
+    """Загружает данные из файла в таблицы Postgres."""
+    logger.info('load_to_db is working')
 
 
 async def mark_batch_loaded(filename: str, snapshot_date: date) -> None:

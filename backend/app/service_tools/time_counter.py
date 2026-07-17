@@ -1,0 +1,38 @@
+import asyncio
+import functools
+import time
+from typing import Callable
+
+from app.services.upload_to_db import logger
+
+
+def get_executing_time(func: Callable):
+    """Декоратор расчета времени выполнения функции."""
+    @functools.wraps(func)
+    async def wrapper(*args, **kwargs):
+        start = time.perf_counter_ns()
+        result = await func(*args, **kwargs)
+        end = time.perf_counter_ns()
+        elapsed = (end - start) / 1_000_000
+        logger.info('Время выполнения функции %s: %.6f ms',
+                    func.__name__, elapsed)
+        return result
+    return wrapper
+
+
+@get_executing_time
+async def counter():
+    # time.sleep(1)
+    logger.info('func counter executed')
+
+# print(counter.__name__)
+# print(get_executing_time.__annotations__)
+
+
+# decor = get_executing_time(counter)
+# decor()
+# # decorator = get_executing_time
+# # decorator(counter)
+
+if __name__ == '__main__':
+    asyncio.run(counter())
