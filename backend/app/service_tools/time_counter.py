@@ -1,9 +1,16 @@
+#  python -m backend.app.service_tools.time_counter
 import asyncio
 import functools
+import logging
 import time
 from typing import Callable
 
-from app.services.upload_to_db import logger
+from backend.app.config.logging_config import logging_setup
+
+
+logging_setup()
+
+logger = logging.getLogger(__name__)
 
 
 def get_executing_time(func: Callable):
@@ -29,8 +36,8 @@ async def counter():
 # print(get_executing_time.__annotations__)
 
 
-# decor = get_executing_time(counter)
-# decor()
+# counter = get_executing_time(counter)
+# counter()
 # # decorator = get_executing_time
 # # decorator(counter)
 

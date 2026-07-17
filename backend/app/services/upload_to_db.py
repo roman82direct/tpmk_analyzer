@@ -4,11 +4,10 @@ import re
 from datetime import datetime, date
 from pathlib import Path
 
+from backend.app.config.logging_config import logging_setup
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+logging_setup()
+
 logger = logging.getLogger(__name__)
 
 FILENAME_RE = re.compile(r'^tpmk_new_(?P<date>\d{2}\.\d{2}\.\d{4})\.xlsx$')
