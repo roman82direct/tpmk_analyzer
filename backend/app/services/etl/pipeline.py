@@ -1,6 +1,4 @@
 import logging
-from collections.abc import Hashable
-from typing import Any
 
 from backend.app.config.logging_config import logging_setup
 from backend.app.config.settings import backend_settings
@@ -15,7 +13,7 @@ class ETLPipeline:
 
     def __init__(
             self,
-            extractor: BaseExtractor[list[dict[Hashable, Any]]],
+            extractor: BaseExtractor,
             transformer=None,
             loader=None
     ) -> None:
