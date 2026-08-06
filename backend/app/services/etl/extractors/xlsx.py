@@ -1,16 +1,20 @@
-from collections.abc import Iterable
+import logging
+from collections.abc import Hashable
 from pathlib import Path
+from time import perf_counter
 from typing import Any
 
 import pandas as pd
 
 from .base import BaseExtractor
 
+logger = logging.getLogger(__name__)
 
-class XlsxExtractor(BaseExtractor[dict[str, Any]]):
+
+class XlsxExtractor(BaseExtractor[list[dict[Hashable, Any]]]):
     """Получение данных из xlsx."""
 
-    REQUIRED_COLUMNS = ['Код', 'Товар', 'Стр.', 'Дата вв.', 'Дата сл.п.',
+    REQUIRED_COLUMNS = ('Код', 'Товар', 'Стр.', 'Дата вв.', 'Дата сл.п.',
                         'Рез. (Кл), шт.', 'Рез. проч., шт.',
                         'Остатки трансфер, кол.', 'Скл. кол.',
                         'Склад сумма, руб.', 'В т.ч. ост. товаров на комиссии, шт.',
@@ -42,15 +46,41 @@ class XlsxExtractor(BaseExtractor[dict[str, Any]]):
                         'Партнерская Цена10',
                         # ГМ
                         'Продано (шт).3', 'ТО СС, руб..4', 'ТО, руб..4',
-                        'Продажа Цена ГМ, руб.']
+                        'Продажа Цена ГМ, руб.')
 
     def __init__(self, file_path: Path):
         self.file_path = file_path
 
-    def extract(self) -> Iterable[dict[str, Any]]:
-        df = pd.read_excel(
-            self.file_path,
-            usecols=self.REQUIRED_COLUMNS,
-            header=2
+    def extract(self) -> list[dict[Hashable, Any]]:
+        started_at = perf_counter()
+        try:
+            df = pd.read_excel(
+                self.file_path,
+                usecols=self.REQUIRED_COLUMNS,
+                header=2
+            )
+        except FileNotFoundError:
+            logger.error('Excel-файл %s не найден', self.file_path)
+            raise
+        except PermissionError:
+            logger.error('Нет доступа к Excel-файлу: %s', self.file_path)
+            raise
+        except ValueError:
+            logger.error('Некорректная структура Excel-файла: %s',
+                         self.file_path)
+            raise
+        except Exception:
+            logger.error('Ошибка при чтении Excel-файла: %s',
+                         self.file_path)
+            raise
+
+        records = df.to_dict(orient='records')
+        elapsed = perf_counter() - started_at
+
+        logger.info(
+            'Данные из Excel извлечены: file=%s, rows=%d,'
+            ' columns=%d, elapsed=%.3fs',
+            self.file_path, len(df), len(df.columns), elapsed,
         )
-        return df.to_dict(orient='records')
+
+        return records
