@@ -14,22 +14,28 @@ logger = logging.getLogger(__name__)
 class XlsxExtractor(BaseExtractor[list[dict[Hashable, Any]]]):
     """Получение данных из xlsx."""
 
+    HEADER_ROW = 2
+
     REQUIRED_COLUMNS: tuple[str, ...] = (
         'Код', 'Товар', 'Кол. в кор.', 'Мин. партия ОПТ', 'Мин. партия ГМ',
         'Группа 1', 'Группа 2', 'Группа 3', 'Бренд',
         'Ассортимент', 'Ассортимент ГМ',
         'Стр.', 'Дата вв.', 'Дата сл.п.',
         'Дата окончания продаж ОПТ', 'Дата окончания продаж ГМ',
-        'Кат. КУБ', 'Себ., руб.', 'Оптовая Цена10, руб.',
+        # 'Кат. КУБ',
+        'Себ., руб.', 'Оптовая Цена10, руб.',
         'СП Опт\nЦена10, руб.', 'Старые остатки Цена10, руб.',
         'КрМПР Цена10, руб.', 'Партнерская Цена10', 'Продажа Цена ГМ, руб.',
-        'КЗ остатка', 'КЗ остатка РЦ', 'КЗ+ путь', 'КЗ + закуп',
+        'КЗ остатка', 'КЗ остатка РЦ', 'КЗ+ путь',
+        # 'КЗ + закуп',
         'Скл. кол.', 'Склад сумма, руб.', 'Рез. (Кл), шт.', 'Рез. проч., шт.',
-        'Остатки трансфер, кол.', 'В т.ч. ост. товаров на комиссии, шт.',
-        'В\nпути,\nкол.', 'В закупе, кол.', 'Просроченные (В закупе), кол.',
-        'Подпис закуп, кол.', 'Проблемные, кол',
+        'Остатки трансфер, кол.',
+        # 'В т.ч. ост. товаров на комиссии, шт.',
+        'В\nпути,\nкол.', 'В закупе, кол.',
+        # 'Подпис закуп, кол.', 'Проблемные, кол',
         'Прод. кол.', 'ТО СС, руб.', 'ТО, руб.',
-        'Дата п.п.', 'Закупщик', 'Магазин / Лавка',
+        # 'Дата п.п.',
+        'Закупщик', 'Магазин / Лавка',
         # опт
         'Остаток (шт)', 'Остаток (руб.)', '"В т.ч.  Остаток  склады СП (шт)"',
         '"В т.ч.  Остаток  склады СО (шт)"', 'Продано (шт)',
@@ -37,7 +43,7 @@ class XlsxExtractor(BaseExtractor[list[dict[Hashable, Any]]]):
         # КрМПР
         'Продано (шт).1', 'ТО СС, руб..2', 'ТО, руб..2',
         # ФР
-        'Продано (шт).2', 'ТО СС, руб..3', 'ТО, руб..3', 'ВП, руб..3',
+        'Продано (шт).2', 'ТО СС, руб..3', 'ТО, руб..3',
         # ГМ
         'Продано (шт).3', 'ТО СС, руб..4', 'ТО, руб..4',
     )
@@ -46,13 +52,15 @@ class XlsxExtractor(BaseExtractor[list[dict[Hashable, Any]]]):
         self.file_path = file_path
 
     def _read_dataframe(self) -> pd.DataFrame:
+        """Чтение данных из эксель."""
         return pd.read_excel(
             self.file_path,
             usecols=self.REQUIRED_COLUMNS,
-            header=2
+            header=self.HEADER_ROW
         )
 
     def extract(self) -> list[dict[Hashable, Any]]:
+        """Получение и нормализация данных из эксель."""
         started_at = perf_counter()
 
         try:
@@ -72,13 +80,23 @@ class XlsxExtractor(BaseExtractor[list[dict[Hashable, Any]]]):
                          self.file_path)
             raise
 
+        # Исключаем последнюю строку
+        df = df.iloc[:-1].reset_index(drop=True)
+
         df = df[list(self.REQUIRED_COLUMNS)]
         records = df.to_dict(orient='records')
 
+        for record in records:
+            for key, value in record.items():
+                if pd.isna(value):
+                    record[key] = None
+                elif isinstance(value, pd.Timestamp):
+                    record[key] = value.date()
+
         elapsed = perf_counter() - started_at
         logger.info(
-            'Данные из Excel извлечены: file=%s, rows=%d,'
-            ' columns=%d, elapsed=%.3fs',
+            'Данные из Excel извлечены и нормализованы: '
+            'file=%s, rows=%d, columns=%d, elapsed=%.3fs',
             self.file_path, len(df), len(df.columns), elapsed,
         )
         return records

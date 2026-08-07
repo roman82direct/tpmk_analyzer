@@ -32,8 +32,8 @@ class Product(CommonMixin, Base):
     gm_price: Mapped[Decimal] = mapped_column(Numeric(8, 2), nullable=True,
                                               default=Decimal('0.00'))       # Продажа Цена ГМ, руб.
     arrival_date: Mapped[date] = mapped_column(Date, nullable=True)          # Дата вв.
-    next_delivery_date: Mapped[date] = mapped_column(Date, nullable=True)    # Дата сл.п. / Дата п.п.
-    opt_end_date: Mapped[date] = mapped_column(Date, nullable=True,)                         # Дата окончания продаж ОПТ
+    next_delivery_date: Mapped[date] = mapped_column(Date, nullable=True)    # Дата сл.п.
+    opt_end_date: Mapped[date] = mapped_column(Date, nullable=True,)         # Дата окончания продаж ОПТ
     gm_end_date: Mapped[date] = mapped_column(Date, nullable=True,)          # Дата окончания продаж ГМ
 
 
