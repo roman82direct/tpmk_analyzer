@@ -1,5 +1,7 @@
 # tpmk_analyzer_backend
 
+python 3.12+
+
 ## Основные слои
 
 ### 1. API слой

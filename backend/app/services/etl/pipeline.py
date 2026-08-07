@@ -41,7 +41,7 @@ def main():
         logger.exception('Ошибка при обработке excel-файла: %s', file_path)
         return
 
-    for item in data[:3]:
+    for item in data[:2]:
         print('-' * 30)
         print(item)
 
