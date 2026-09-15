@@ -22,8 +22,8 @@ class InventoryRowDTO(BaseModel):
                               extra='forbid',)
 
     # Товар
-    articul: str = Field(validation_alias='Код', min_length=1)
-    product_name: str = Field(validation_alias='Товар', min_length=1)
+    articul: str | None = Field(validation_alias='Код', min_length=1)
+    product_name: str | None = Field(validation_alias='Товар', min_length=1)
     quantity_in_box: int | None = Field(default=None,
                                         validation_alias='Кол. в кор.')
     min_opt_batch: int | None = Field(default=None,

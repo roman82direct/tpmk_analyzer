@@ -4,7 +4,7 @@ from pathlib import Path
 import httpx
 import streamlit as st
 
-# для корректного импорта st_settings 
+# для корректного импорта st_settings
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))

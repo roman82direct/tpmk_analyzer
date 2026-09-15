@@ -1,6 +1,6 @@
+from io import BytesIO
 import logging
 from collections.abc import Hashable
-from pathlib import Path
 from time import perf_counter
 from typing import Any
 
@@ -48,13 +48,16 @@ class XlsxExtractor(BaseExtractor[list[dict[Hashable, Any]]]):
         'Продано (шт).3', 'ТО СС, руб..4', 'ТО, руб..4',
     )
 
-    def __init__(self, file_path: Path):
-        self.file_path = file_path
+    def __init__(self, file_content: bytes | BytesIO):
+        self.file_content = file_content
 
     def _read_dataframe(self) -> pd.DataFrame:
         """Чтение данных из эксель."""
+        if isinstance(self.file_content, bytes):
+            self.file_content = BytesIO(self.file_content)
+
         return pd.read_excel(
-            self.file_path,
+            self.file_content,
             usecols=self.REQUIRED_COLUMNS,
             header=self.HEADER_ROW
         )
@@ -65,20 +68,15 @@ class XlsxExtractor(BaseExtractor[list[dict[Hashable, Any]]]):
 
         try:
             df = self._read_dataframe()
-        except FileNotFoundError:
-            logger.error('Excel-файл %s не найден', self.file_path)
-            raise
-        except PermissionError:
-            logger.error('Нет доступа к Excel-файлу: %s', self.file_path)
-            raise
-        except ValueError:
-            logger.error('Некорректная структура Excel-файла: %s',
-                         self.file_path)
-            raise
-        except Exception:
-            logger.error('Ошибка при чтении Excel-файла: %s',
-                         self.file_path)
-            raise
+        except PermissionError as error:
+            logger.error('Нет доступа к Excel-файлу: %s', error)
+            raise error
+        except ValueError as error:
+            logger.error('Некорректная структура Excel-файла: %s', error)
+            raise error
+        except Exception as error:
+            logger.error('Ошибка при чтении Excel-файла: %s', error)
+            raise error
 
         # Исключаем последнюю строку
         df = df.iloc[:-1].reset_index(drop=True)
@@ -95,8 +93,7 @@ class XlsxExtractor(BaseExtractor[list[dict[Hashable, Any]]]):
 
         elapsed = perf_counter() - started_at
         logger.info(
-            'Данные из Excel извлечены и нормализованы: '
-            'file=%s, rows=%d, columns=%d, elapsed=%.3fs',
-            self.file_path, len(df), len(df.columns), elapsed,
+            'Данные из Excel извлечены и нормализованы: rows=%d, columns=%d, elapsed=%.3fs',
+            len(df), len(df.columns), elapsed,
         )
         return records
