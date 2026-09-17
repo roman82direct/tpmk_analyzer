@@ -1,9 +1,9 @@
-from io import BytesIO
 import logging
 from collections.abc import Hashable
 from time import perf_counter
 from typing import Any
 
+import fastexcel
 import pandas as pd
 
 from .base import BaseExtractor
@@ -39,28 +39,27 @@ class XlsxExtractor(BaseExtractor[list[dict[Hashable, Any]]]):
         # опт
         'Остаток (шт)', 'Остаток (руб.)', '"В т.ч.  Остаток  склады СП (шт)"',
         '"В т.ч.  Остаток  склады СО (шт)"', 'Продано (шт)',
-        'ТО СС, руб..1', 'ТО, руб..1',
+
+        # ДУБЛЯЖИ - описать обработку
+        'ТО СС, руб.', 'ТО, руб.',
         # КрМПР
-        'Продано (шт).1', 'ТО СС, руб..2', 'ТО, руб..2',
+        'Продано (шт)', 'ТО СС, руб.', 'ТО, руб.',
         # ФР
-        'Продано (шт).2', 'ТО СС, руб..3', 'ТО, руб..3',
+        'Продано (шт)', 'ТО СС, руб.', 'ТО, руб.',
         # ГМ
-        'Продано (шт).3', 'ТО СС, руб..4', 'ТО, руб..4',
+        'Продано (шт)', 'ТО СС, руб.', 'ТО, руб.',
     )
 
-    def __init__(self, file_content: bytes | BytesIO):
+    def __init__(self, file_content: bytes):
         self.file_content = file_content
 
     def _read_dataframe(self) -> pd.DataFrame:
         """Чтение данных из эксель."""
-        if isinstance(self.file_content, bytes):
-            self.file_content = BytesIO(self.file_content)
-
-        return pd.read_excel(
-            self.file_content,
-            usecols=self.REQUIRED_COLUMNS,
-            header=self.HEADER_ROW
-        )
+        reader = fastexcel.read_excel(self.file_content)
+        sheet = reader.load_sheet(0, header_row=self.HEADER_ROW,)
+        df = sheet.to_pandas()
+        df = df[list(self.REQUIRED_COLUMNS)]
+        return df
 
     def extract(self) -> list[dict[Hashable, Any]]:
         """Получение и нормализация данных из эксель."""
@@ -81,7 +80,6 @@ class XlsxExtractor(BaseExtractor[list[dict[Hashable, Any]]]):
         # Исключаем последнюю строку
         df = df.iloc[:-1].reset_index(drop=True)
 
-        df = df[list(self.REQUIRED_COLUMNS)]
         records = df.to_dict(orient='records')
 
         for record in records:

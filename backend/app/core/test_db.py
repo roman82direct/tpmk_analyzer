@@ -46,5 +46,5 @@ async def test_clickhouse_http():
             raise
 
 if __name__ == '__main__':
-    asyncio.run(test_postgres())
-    # asyncio.run(test_clickhouse_http())
+    # asyncio.run(test_postgres())
+    asyncio.run(test_clickhouse_http())

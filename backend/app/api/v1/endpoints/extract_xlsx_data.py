@@ -34,4 +34,4 @@ async def upload_file(file: UploadFile) -> dict:
             detail=f'Ошибка извлечения данных: {exc}',
         )
 
-    return {'status': 'ok', 'rows': len(data)}
+    return {'status': 'ok', 'rows': data[12]}
