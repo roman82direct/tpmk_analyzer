@@ -39,15 +39,13 @@ class XlsxExtractor(BaseExtractor[list[dict[Hashable, Any]]]):
         # опт
         'Остаток (шт)', 'Остаток (руб.)', '"В т.ч.  Остаток  склады СП (шт)"',
         '"В т.ч.  Остаток  склады СО (шт)"', 'Продано (шт)',
-
-        # ДУБЛЯЖИ - описать обработку
-        'ТО СС, руб.', 'ТО, руб.',
+        'ТО СС, руб._1', 'ТО, руб._1',
         # КрМПР
-        'Продано (шт)', 'ТО СС, руб.', 'ТО, руб.',
+        'Продано (шт)_1', 'ТО СС, руб._2', 'ТО, руб._2',
         # ФР
-        'Продано (шт)', 'ТО СС, руб.', 'ТО, руб.',
+        'Продано (шт)_2', 'ТО СС, руб._3', 'ТО, руб._3',
         # ГМ
-        'Продано (шт)', 'ТО СС, руб.', 'ТО, руб.',
+        'Продано (шт)_3', 'ТО СС, руб._4', 'ТО, руб._4',
     )
 
     def __init__(self, file_content: bytes):
@@ -59,7 +57,7 @@ class XlsxExtractor(BaseExtractor[list[dict[Hashable, Any]]]):
         sheet = reader.load_sheet(0, header_row=self.HEADER_ROW,)
         df = sheet.to_pandas()
         df = df[list(self.REQUIRED_COLUMNS)]
-        return df
+        return df.iloc[:-1].reset_index(drop=True)
 
     def extract(self) -> list[dict[Hashable, Any]]:
         """Получение и нормализация данных из эксель."""
@@ -76,9 +74,6 @@ class XlsxExtractor(BaseExtractor[list[dict[Hashable, Any]]]):
         except Exception as error:
             logger.error('Ошибка при чтении Excel-файла: %s', error)
             raise error
-
-        # Исключаем последнюю строку
-        df = df.iloc[:-1].reset_index(drop=True)
 
         records = df.to_dict(orient='records')
 

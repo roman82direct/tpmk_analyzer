@@ -10,16 +10,10 @@ class InventoryRowDTO(BaseModel):
 
     - Pydantic-модель;
     - описание схемы входной строки;
-    - класс DTO;
-    - контракт между Transformer и следующим ETL-слоем.
-
-    Пока не содержит foreign key справочников.
-    Названия измерений хранятся как строки и будут разрешены
-    в id на следующем этапе.
+    - контракт между Transformer и Loader.
     '''
 
-    model_config = ConfigDict(validate_by_name=True, validate_by_alias=True,
-                              extra='forbid',)
+    model_config = ConfigDict(validate_by_alias=True, extra='forbid',)
 
     # Товар
     articul: str | None = Field(validation_alias='Код', min_length=1)
@@ -118,30 +112,30 @@ class InventoryRowDTO(BaseModel):
     opt_sold_qty: int | None = Field(default=None,
                                      validation_alias='Продано (шт)')
     opt_turnover_ss: Decimal | None = Field(default=None,
-                                            validation_alias='ТО СС, руб..1')
+                                            validation_alias='ТО СС, руб._1')
     opt_turnover: Decimal | None = Field(default=None,
-                                         validation_alias='ТО, руб..1')
+                                         validation_alias='ТО, руб._1')
 
     # КрМПР
     krmpr_sold_qty: int | None = Field(default=None,
-                                       validation_alias='Продано (шт).1')
+                                       validation_alias='Продано (шт)_1')
     krmpr_turnover_ss: Decimal | None = Field(default=None,
-                                              validation_alias='ТО СС, руб..2')
+                                              validation_alias='ТО СС, руб._2')
     krmpr_turnover: Decimal | None = Field(default=None,
-                                           validation_alias='ТО, руб..2')
+                                           validation_alias='ТО, руб._2')
 
     # ФР
     fr_sold_qty: int | None = Field(default=None,
-                                    validation_alias='Продано (шт).2')
+                                    validation_alias='Продано (шт)_2')
     fr_turnover_ss: Decimal | None = Field(default=None,
-                                           validation_alias='ТО СС, руб..3')
+                                           validation_alias='ТО СС, руб._3')
     fr_turnover: Decimal | None = Field(default=None,
-                                        validation_alias='ТО, руб..3')
+                                        validation_alias='ТО, руб._3')
 
     # ГМ
     gm_sold_qty: int | None = Field(default=None,
-                                    validation_alias='Продано (шт).3')
+                                    validation_alias='Продано (шт)_3')
     gm_turnover_ss: Decimal | None = Field(default=None,
-                                           validation_alias='ТО СС, руб..4')
+                                           validation_alias='ТО СС, руб._4')
     gm_turnover: Decimal | None = Field(default=None,
-                                        validation_alias='ТО, руб..4')
+                                        validation_alias='ТО, руб._4')
