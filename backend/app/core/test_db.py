@@ -5,6 +5,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from backend.app.config.settings import backend_settings
+from backend.app.core.db import create_clickhouse_engine
 
 
 async def test_postgres():
@@ -23,28 +24,30 @@ async def test_postgres():
         await engine.dispose()
 
 
-async def test_clickhouse_http():
-    """Проверка подключения к ClickHouse через HTTP."""
-    # url = 'http://roman.papenov%40constanta-t.ru:bRHeL%402u6SF2urHo@10.193.49.32:8124/?database=edu'
-    url = backend_settings.clickhouse_url
-    print(f'ClickHouse URL: {url}')
+def test_clickhouse() -> None:
+    """Проверяет ClickHouse через общий cached Engine."""
+    engine = create_clickhouse_engine()
 
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.post(
-                url,
-                content='SELECT 1 AS check',
-                timeout=5.0,
+    try:
+        with engine.connect() as connection:
+            result = connection.execute(
+                text('SELECT * FROM balances_total LIMIT 10')
             )
-            response.raise_for_status()
-            print(f'ClickHouse HTTP: подключено, ответ: {response.text.strip()}')
-        except httpx.HTTPError as exc:
-            print(f'ClickHouse HTTP: ошибка — {exc}')
-            raise
-        except Exception as exc:
-            print(f'ClickHouse HTTP: ошибка — {exc}')
-            raise
+
+        print(f'ClickHouse: подключено, check={result.first()}')
+
+    except Exception as exc:
+        print(
+            'ClickHouse: ошибка подключения — '
+            f'{type(exc).__name__}: {exc}'
+        )
+        raise
+
+
+async def main() -> None:
+    # await test_postgres()
+    test_clickhouse()
+
 
 if __name__ == '__main__':
-    # asyncio.run(test_postgres())
-    asyncio.run(test_clickhouse_http())
+    asyncio.run(main())

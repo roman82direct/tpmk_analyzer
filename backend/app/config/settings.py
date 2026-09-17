@@ -22,6 +22,8 @@ class BackendSettings(BaseAppSettings):
     clickhouse_db: str
     clickhouse_user: str
     clickhouse_pass: SecretStr = SecretStr('guest')
+    clickhouse_secure: bool = True
+    clickhouse_ca_cert: Path | None = None
 
     log_level: str = 'DEBUG'
     log_format: str = '%(asctime)s - %(levelname)s - %(name)s - %(message)s'
@@ -44,10 +46,10 @@ class BackendSettings(BaseAppSettings):
         """Строка подключения ClickHouse."""
         user = quote(self.clickhouse_user, safe='')
         password = quote(self.clickhouse_pass.get_secret_value(), safe='')
-        host = quote(self.clickhouse_host, safe='')
+        database = quote(self.clickhouse_db, safe='')
         return (
-            f'http://{user}:{password}@{host}:{self.clickhouse_port}/'
-            f'?database={self.clickhouse_db}'
+            f'clickhousedb+connect://{user}:{password}'
+            f'@{self.clickhouse_host}:{self.clickhouse_port}/{database}'
         )
 
 
