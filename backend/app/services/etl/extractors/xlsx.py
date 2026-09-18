@@ -12,7 +12,10 @@ logger = logging.getLogger(__name__)
 
 
 class XlsxExtractor(BaseExtractor[list[dict[Hashable, Any]]]):
-    """Получение данных из xlsx."""
+    """Получение данных из xlsx.
+
+    openpyxl заменен на fastexcel. Оптимизация по времени: х6.
+    """
 
     HEADER_ROW = 2
 
