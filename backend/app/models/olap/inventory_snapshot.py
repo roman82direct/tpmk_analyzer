@@ -1,8 +1,7 @@
 from datetime import date
 from decimal import Decimal
 
-from sqlalchemy import (Date, ForeignKey, Index, Integer, Numeric,
-                        UniqueConstraint)
+from sqlalchemy import Date, ForeignKey, Index, Integer, Numeric, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from backend.app.models.base import Base
@@ -31,9 +30,9 @@ class InventoryDailySnapshot(Base):
     assortment_gm_id: Mapped[int] = mapped_column(
         ForeignKey('assortment_gm.id'), index=True
     )
-    group1_id: Mapped[int] = mapped_column(ForeignKey('group.id'), index=True)
-    group2_id: Mapped[int] = mapped_column(ForeignKey('group.id'), index=True)
-    group3_id: Mapped[int] = mapped_column(ForeignKey('group.id'), index=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey('product_group.id'), index=True)
+    # group2_id: Mapped[int] = mapped_column(ForeignKey('product_group.id'), index=True)
+    # group3_id: Mapped[int] = mapped_column(ForeignKey('product_group.id'), index=True)
     brand_id: Mapped[int] = mapped_column(ForeignKey('brand.id'),
                                           nullable=True, index=True)
     # buyer_id: Mapped[int] = mapped_column(ForeignKey('user.id'), index=True)
@@ -87,5 +86,5 @@ class InventoryDailySnapshot(Base):
             ),
         # Индекс для запросов 'дай мне snapshot на дату по группе и статусу'
         Index('idx_inventory_snapshot_date_group_assortment',
-              'snapshot_date', 'group1_id', 'assortment_id'),
+              'snapshot_date', 'group_id', 'assortment_id'),
     )

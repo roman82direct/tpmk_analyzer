@@ -7,3 +7,4 @@ from .oltp.dimensions import Brand  # noqa
 from .oltp.dimensions import Country  # noqa
 from .oltp.dimensions import Group  # noqa
 from .oltp.dimensions import Product  # noqa
+from .oltp.dimensions import Store  # noqa

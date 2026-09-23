@@ -1,6 +1,7 @@
 import logging
 
 from backend.app.services.etl.extractors.base import BaseExtractor
+from backend.app.services.etl.loaders.postgres import PGLoader
 from backend.app.services.etl.transformers.inventory import InventoryTransformer
 
 logger = logging.getLogger(__name__)
@@ -13,15 +14,17 @@ class ETLPipeline:
             self,
             extractor: BaseExtractor,
             transformer: InventoryTransformer,
+            loader: PGLoader,
     ) -> None:
         self.extractor = extractor
         self.transformer = transformer
+        self.loader = loader
 
-    def run(self):
+    async def run(self):
         logger.info('ETL pipeline запущен')
         rows = self.extractor.extract()
         dto_rows = self.transformer.transform_many(rows)
-        # здесь сохраняем в базу
+        await self.loader.load(dto_rows)
         logger.info('ETL pipeline завершён')
         return dto_rows
 

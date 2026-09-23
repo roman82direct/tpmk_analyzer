@@ -20,4 +20,4 @@ class CommonMixin:
         return cls.__name__.lower()
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    name: Mapped[str] = mapped_column(String, unique=True)
