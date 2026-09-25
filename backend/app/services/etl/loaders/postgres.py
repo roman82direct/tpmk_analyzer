@@ -258,11 +258,11 @@ class PGLoader:
                     # buyer_id=buyer_id,
                 )
 
-                await self._upsert_snapshot(
-                    row=row,
-                    product_id=product_id,
-                    store_id=store_id
-                )
+                # await self._upsert_snapshot(
+                #     row=row,
+                #     product_id=product_id,
+                #     store_id=store_id
+                # )
                 counter += 1
         elapsed = perf_counter() - started_at
         logger.info(
